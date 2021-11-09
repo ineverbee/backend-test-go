@@ -30,9 +30,8 @@ services:
     tty: true
     container_name: go_adminer
   app:
-    build:
-      context: ./cmd/auto
-    command: make run
+    build: .
+    command: ./app
     volumes:
       - "./:/go/src/github.com/ineverbee/backend-test-go"
     container_name: go_app

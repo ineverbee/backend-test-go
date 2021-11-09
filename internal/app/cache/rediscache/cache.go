@@ -31,15 +31,15 @@ func (s *Cache) getClient() (redigo.Conn, error) {
 }
 
 // Get ...
-func (s *Cache) Get(key interface{}) (string, error) {
+func (s *Cache) Get(key interface{}) (int, error) {
 	c, err := s.getClient()
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 	defer c.Close()
-	data, err := redigo.String(c.Do("GET", key))
+	data, err := redigo.Int(c.Do("GET", key))
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 	return data, nil
 }
@@ -53,11 +53,7 @@ func (s *Cache) Set(key, val interface{}, ttl time.Duration) error {
 	defer c.Close()
 	_, err = c.Do("SET", key, val)
 	if err != nil {
-		v := val.(string)
-		if len(v) > 15 {
-			v = v[0:12] + "..."
-		}
-		return fmt.Errorf("error setting key %s to %s: %v", key, v, err)
+		return fmt.Errorf("error setting key %v to %v: %v", key, val, err)
 	}
 	return nil
 }

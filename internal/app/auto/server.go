@@ -196,7 +196,9 @@ func (s *server) handleBalance() http.HandlerFunc {
 		u := &models.User{
 			ID: req.ID,
 		}
-		if err := s.store.Users().FindByID(u); err != nil {
+		if bal, err := s.cache.Get(u.ID); err == nil {
+			u.Balance = bal
+		} else if err := s.store.Users().FindByID(u); err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
 		}
